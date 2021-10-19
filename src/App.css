@@ -1,0 +1,42 @@
+.App{
+    overflow-x: hidden;
+}
+.body{
+    min-height: 500px;
+}
+.carousel img{
+    height: 400px;
+}
+.bg-gray{
+    background: #e3e3e3;
+}
+.bg-darkblue {
+    background: #233D53 !important;
+}
+
+a.bg-darkblue:hover, a.bg-darkblue:focus,
+button.bg-darkblue:hover,
+button.bg-darkblue:focus {
+    background-color: #233D53 !important;
+}
+
+.bg-orange{
+    background: #FA532E;
+}
+.bg-new-light{
+    background: #fbf7f2;
+}
+
+.text-darkblue{
+    color: #233d53;
+}
+
+
+@media screen and (max-width: 760px){
+    .carousel img{
+        height: auto;
+    }
+    .body{
+        min-height: auto;
+    }
+}

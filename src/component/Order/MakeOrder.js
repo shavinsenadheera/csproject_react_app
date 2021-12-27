@@ -3,7 +3,7 @@ import {Alert, Button, Card, Form, FormControl, FormGroup, FormLabel, Row} from 
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPlus, faTimesCircle, faInfoCircle, faCartPlus} from "@fortawesome/free-solid-svg-icons";
 import {AiOutlineClose} from 'react-icons/ai';
-import axios from "axios";
+import instance from '../../service/api/instance';
 
 function MakeOrder(){
     const [ inputList, setInputList ] = useState(
@@ -46,7 +46,7 @@ function MakeOrder(){
     };
     //Get make order details from database
     useEffect(()=>{
-        axios
+        instance
         .get('http://127.0.0.1:8000/api/make-order')
         .then((response)=>{
             setLabelTypedata(response.data.labeltypes)
@@ -79,8 +79,8 @@ function MakeOrder(){
     
     const makeOrder=(e)=>{
         e.preventDefault()
-        axios
-        .post('http://127.0.0.1:8000/api/make-order',{inputList,count,customerid})
+        instance
+        .post('make-order',{inputList,count,customerid})
         .then((response)=>{
             setSuccessMsg('Successfully make the order!')
         })

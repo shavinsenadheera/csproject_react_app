@@ -10,6 +10,7 @@ import ProtectedRoutes from "../../protected.routes";
 import Order from "../Order/Order";
 import MakeOrder from "../Order/MakeOrder";
 import NotFound from "../NotFound/NotFound";
+import NewCustomer from "../NewCustomer"
 import React from "react";
 import {faUser} from "@fortawesome/free-regular-svg-icons";
 import Profile from "../Profile/Profile";
@@ -34,6 +35,9 @@ function Header(props){
                             </Nav.Link>
                             <Nav.Link>
                                 <Link to="/about-us" tag={Nav.Link} className="text-white">About Us</Link>
+                            </Nav.Link>
+                            <Nav.Link>
+                                <Link to="/new-customer" tag={Nav.Link} className="text-warning">New Customer</Link>
                             </Nav.Link>
                         </Nav>
                         <Nav>
@@ -66,6 +70,7 @@ function Header(props){
                         <Route exact path="/" component={Welcome} />
                         <Route exact path="/about-us" component={AboutUs} />
                         <Route exact path="/login" component={Login} />
+                        <Route exact path="/new-customer" component={NewCustomer} />
                         <ProtectedRoutes exact path="/order" component={Order} />
                         <ProtectedRoutes exact path="/make-order" component={MakeOrder} />
                         <ProtectedRoutes exact path="/profile" component={Profile} />

@@ -7,7 +7,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Pagination from "react-js-pagination";
-import axios from "axios";
+import instance from '../../service/api/instance';
+import Cry from '../../resources/img/cry2.gif';
 
 function MyOrder(){
 
@@ -24,8 +25,8 @@ function MyOrder(){
         getOrderData()
     },[])
     const getOrderData=async (pageNumber=1)=>{
-        await axios
-            .get(`http://127.0.0.1:8000/api/get-orders/${localStorage.getItem('user_id')}?page=${pageNumber}`)
+        await instance
+            .get(`get-orders/${localStorage.getItem('user_id')}?page=${pageNumber}`)
             .then(async (response)=>{
                 await setOrders(response.data.orders.data)
                 await setCurrentPage(response.data.orders.current_page)
@@ -55,7 +56,9 @@ function MyOrder(){
                     </div>
                 </div>
                 <div className="card-body">
-                    <div className="row">
+                {
+                    orders.length > 0 && (
+                        <div className="row">
                         <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                             <div className="float-right text-darkblue">
                                 <Pagination
@@ -71,9 +74,11 @@ function MyOrder(){
                                 />
                             </div>
                         </div>
-                    </div>
+                    </div>       
+                    )
+                }
                 {
-            orders.map((order, index)=>(
+            orders.map((order)=>(
                 <Card className="my-3 p-0">
                     <Card.Body>
                         <Card.Title>
@@ -224,22 +229,39 @@ function MyOrder(){
                     </Card>
                 ))
             }
-                    <div className="row">
-                        <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                            <div className="float-right">
-                                <Pagination
-                                    activePage={currentPage}
-                                    totalItemsCount={totalPages}
-                                    itemsCountPerPage={itemsPerPage}
-                                    onChange={(pageNumber)=>getOrderData(pageNumber)}
-                                    itemClass="page-item"
-                                    linkClass="page-link"
-                                    firstPageText="First"
-                                    lastPageText="Last"
-                                />
+            {
+                    orders.length > 0 && (
+                        <div className="row">
+                            <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                <div className="float-right text-darkblue">
+                                    <Pagination
+                                        activePage={currentPage}
+                                        totalItemsCount={totalPages}
+                                        itemsCountPerPage={itemsPerPage}
+                                        onChange={(pageNumber)=>getOrderData(pageNumber)}
+                                        itemClass="page-item"
+                                        linkClass="page-link"
+                                        firstPageText="First"
+                                        lastPageText="Last"
+                                        color="warning"
+                                    />
+                                </div>
+                            </div>`
+                    </div>       
+                    )
+                }
+                {
+                    orders.length===0 && (
+                        <div className="row">
+                            <div className="col-12 text-center">
+                                <img src={Cry} alt={'No Data Here'} />
+                                <h4 class={'text-warning'}>
+                                    {'No Data To Load!'}
+                                </h4>
                             </div>
                         </div>
-                    </div>
+                    )
+                }
             </div>
         </Card>
     </div>

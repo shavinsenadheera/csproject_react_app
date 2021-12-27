@@ -1,5 +1,4 @@
 import React, {useState} from "react";
-import axios from "axios";
 import {useForm} from "react-hook-form";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEnvelope, faExclamationCircle, faInfoCircle ,faKey, faTimesCircle} from "@fortawesome/free-solid-svg-icons";
@@ -7,6 +6,8 @@ import {yupResolver} from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import {Alert, Button, Card, Form, FormControl, FormGroup, InputGroup, Row} from "react-bootstrap";
 import Auth from "../../Auth";
+import instance from '../../service/api/instance';
+import { useHistory } from "react-router-dom";
 
 const schema = yup.object().shape({
     email   : yup.string().required().email(),
@@ -14,14 +15,15 @@ const schema = yup.object().shape({
 })
 
 function Login(props){
+    const history = useHistory(); 
     const [ successMsg, setSuccessMsg ] = useState(null)
     const [ failedMsg, setFailedMsg ] = useState(null)
     const { register, handleSubmit, errors } = useForm({
         resolver:yupResolver(schema)
     })
     const onSubmit=async (data)=>{
-        axios
-            .post('http://csprojecttemp.rabbitdevs.com/api/customer-login',{data})
+        instance
+            .post('customer-login',{data})
             .then(async (response)=>{
                 await localStorage.setItem('username',response.data.name);
                 await localStorage.setItem('user_id',response.data.id);
@@ -35,6 +37,9 @@ function Login(props){
                 setFailedMsg(error.response)
             })
     }
+    const goToNewCustomer = () => {
+        history.push('/new-customer');
+    };
     return(
         <Row className="body">
             <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-5" align="center">
@@ -50,7 +55,9 @@ function Login(props){
                                 </Button>
                             }
                             </div>
-                            <Alert.Heading className="text-info"><h6 className="font-italic"><FontAwesomeIcon icon={faInfoCircle} /> {successMsg}</h6></Alert.Heading>
+                            <Alert.Heading className="text-info text-left">
+                                <h6 className="font-italic"><FontAwesomeIcon icon={faInfoCircle} /> {successMsg}</h6>
+                            </Alert.Heading>
                         </Alert>
                     }
                     {
@@ -64,7 +71,9 @@ function Login(props){
                                 </Button>
                             }
                         </div>
-                        <Alert.Heading className="text-danger"><h6 className="font-italic"><FontAwesomeIcon icon={faInfoCircle} /> {failedMsg.data}</h6></Alert.Heading>
+                        <Alert.Heading className="text-danger text-left">
+                            <h6 className="font-italic"><FontAwesomeIcon icon={faInfoCircle} /> {failedMsg.data}</h6>
+                        </Alert.Heading>
                     </Alert>
                     }
                     <Form onSubmit={handleSubmit(onSubmit)}>
@@ -89,9 +98,8 @@ function Login(props){
                                     <FormControl type="password" name="password" ref={register} />
                                 </InputGroup>
                                 <p className="text-danger">{ errors.password && <FontAwesomeIcon icon={faExclamationCircle} /> } {errors.password?.message}</p>
-    
                                 <FormGroup>
-                                    <span className="text-darkblue">Are you not a member in ABCTL? Please contact ABCTL</span>
+                                    <span className="text-darkblue">Are you not a member in ABCTL? Please contact ABCTL or <a class={'text-primary'} href={'#'} onClick={goToNewCustomer}>Make Request</a></span>
                                 </FormGroup>
                             </div>
                         </Card>

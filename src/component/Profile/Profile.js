@@ -1,49 +1,69 @@
 import React, {useEffect, useState} from "react";
-import axios from "axios";
 import {Alert, Button, Card, Form, Row, Tab, Col, Nav} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faInfoCircle, faTimesCircle} from "@fortawesome/free-solid-svg-icons";
-import {useForm} from "react-hook-form";
-import {yupResolver} from "@hookform/resolvers/yup";
-import * as yup from "yup";
+import {useFormik} from 'formik';
+import instance from '../../service/api/instance';
 
-const schema = yup.object().shape({
-    password : yup.string().required().min(8),
-    confirmPassword: yup.string().oneOf([yup.ref('password','null') ,'Password match'])
-});
 function Profile()
 {
-    const [ customerInfo, setCustomerInfo ] = useState([])
-    const [ cities, setCities ] = useState([])
-    const [ successMsg, setSuccessMsg ] = useState(null)
-    const [ failedMsg, setFailedMsg ] = useState(null)
-    const { register, handleSubmit, errors } = useForm({
-        resolver:yupResolver(schema)
-    })
-    
-    const onSubmit=async (data)=>{
-        axios
-        .post(`http://127.0.0.1:8000/api/customer/update/${localStorage.getItem('user_id')}`,{data})
-        .then(async (response)=>{
-        
-        })
-        .catch((error)=>{
-            setFailedMsg(error.response)
-        })
-    }
-    
+    const [ customerInfo, setCustomerInfo ] = useState([]);
+    const [ cities, setCities ] = useState([]);
+    const [ successMsg, setSuccessMsg ] = useState('');
+    const [ failedMsg, setFailedMsg ] = useState('');
     useEffect(()=>{
-        axios
-            .get(`http://127.0.0.1:8000/api/customer/info/${localStorage.getItem('user_id')}`)
-            .then(async (response)=>{
-                await setCities(response.data.cities)
-                await setCustomerInfo(response.data.customer)
+        instance
+            .get(`customer/info/${localStorage.getItem('user_id')}`)
+            .then((response)=>{
+                setCities(response.data.cities);
+                setCustomerInfo(response.data.customer);
+                changeProfileFormik.setValues(response.data.customer);
             })
             .catch((error)=>{
-                console.log(error)
+                console.log(error);
             })
-    },[])
+    },[]);
     
+    const changeProfileFormik = useFormik({
+        initialValues: {
+            name: customerInfo.name,
+            email: customerInfo.email,
+            address_line_1: customerInfo.address_line_1,
+            address_line_2: customerInfo.address_line_2,
+            city: customerInfo.city,
+            zipcode: customerInfo.zipcode,
+            telephone_no: customerInfo.telephone_no,
+            telephone_land: customerInfo.telephone_land,
+            telephone_fax:customerInfo.telephone_fax
+        },
+        onSubmit: values => {
+            instance
+            .put(`customer/info/${localStorage.getItem('user_id')}/update`, values)
+            .then((response) => {
+                setSuccessMsg(response);
+            })
+            .catch((error) => {
+                setFailedMsg(error);
+            });
+        }
+    }); 
+    const changePasswordFormik = useFormik({
+        initialValues: {
+            current_password: '',
+            password: '',
+            confirm_password: ''
+        },
+        onSubmit: values => {
+            instance
+            .put(`customer/password/${localStorage.getItem('user_id')}/update`, values)
+            .then((response) => {
+                setSuccessMsg(response);
+            })
+            .catch((error) => {
+                setFailedMsg(error);
+            });
+        }
+    });    
     return(
         <Row className="body">
             <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-5" align="center">
@@ -58,15 +78,15 @@ function Profile()
                                         size="sm"
                                         variant="white"
                                         className="text-danger"
-                                        onClick={() => setSuccessMsg(null)}
+                                        onClick={() => setSuccessMsg('')}
                                     >
                                         <FontAwesomeIcon icon={faTimesCircle} />
                                     </Button>
                                 }
                             </div>
                             <Alert.Heading className="text-info">
-                                <h6 className="font-italic">
-                                    <FontAwesomeIcon icon={faInfoCircle} /> {successMsg}
+                                <h6 className="font-italic text-left">
+                                    <FontAwesomeIcon icon={faInfoCircle} /> {successMsg.data}
                                 </h6>
                             </Alert.Heading>
                         </Alert>
@@ -81,7 +101,7 @@ function Profile()
                                         size="sm"
                                         variant="white"
                                         className="text-danger"
-                                        onClick={() => setFailedMsg(null)}
+                                        onClick={() => setFailedMsg('')}
                                     >
                                         <FontAwesomeIcon icon={faTimesCircle} />
                                     </Button>
@@ -101,9 +121,6 @@ function Profile()
                            <div className="text-left float-left text-white font-weight-bold">
                                Profile
                            </div>
-                           <div className="text-right float-right">
-                               <span className="text-danger font-weight-bold">Profile handle by ABCTL</span>
-                           </div>
                        </Card.Header>
                        <Card.Body>
                            <Tab.Container id="left-tabs-example" defaultActiveKey="first">
@@ -119,18 +136,19 @@ function Profile()
                                        </Nav>
                                    </Col>
                                    <Col sm={9}>
-                                       <Tab.Content>
-                                           <Tab.Pane eventKey="first">
-                                               <div className="row">
+                                        <Tab.Content>
+                                            <Tab.Pane eventKey="first">
+                                                <form onSubmit={changeProfileFormik.handleSubmit}>
+                                                <div className="row">
                                                    <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12 text-left">
                                                        <div className="form-group">
                                                            <label htmlFor="name">Company name</label>
                                                            <input
                                                                type="text"
-                                                               disabled={true}
                                                                name="name"
                                                                className="form-control"
-                                                               value={customerInfo.name}
+                                                               onChange={changeProfileFormik.handleChange}
+                                                               value={changeProfileFormik.values.name}
                                                                required={true}
                                                            />
                                                        </div>
@@ -140,10 +158,10 @@ function Profile()
                                                            <label htmlFor="email">Company email</label>
                                                            <input
                                                                type="text"
-                                                               disabled={true}
                                                                name="email"
                                                                className="form-control"
-                                                               value={customerInfo.email}
+                                                               onChange={changeProfileFormik.handleChange}
+                                                               value={changeProfileFormik.values.email}
                                                                required={true}
                                                            />
                                                        </div>
@@ -155,10 +173,10 @@ function Profile()
                                                            <label htmlFor="address_line_1">Delivery address line 1</label>
                                                            <input
                                                                type="text"
-                                                               disabled={true}
                                                                name="address_line_1"
                                                                className="form-control"
-                                                               value={customerInfo.address_line_1}
+                                                               onChange={changeProfileFormik.handleChange}
+                                                               value={changeProfileFormik.values.address_line_1}
                                                                required={true}
                                                            />
                                                        </div>
@@ -170,11 +188,10 @@ function Profile()
                                                            <label htmlFor="address_line_2">Delivery address line 2</label>
                                                            <input
                                                                type="text"
-                                                               disabled={true}
                                                                name="address_line_2"
                                                                className="form-control"
-                                                               value={customerInfo.address_line_2}
-                                                               required={true}
+                                                               onChange={changeProfileFormik.handleChange}
+                                                               value={changeProfileFormik.values.address_line_2}
                                                            />
                                                        </div>
                                                    </div>
@@ -183,7 +200,13 @@ function Profile()
                                                    <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12 text-left">
                                                        <div className="form-group">
                                                            <label htmlFor="name">City</label>
-                                                           <select name="city" id="city" className="form-control" disabled={true} value={customerInfo.city}>
+                                                           <select 
+                                                                name="city" 
+                                                                id="city" 
+                                                                className="form-control" 
+                                                                onChange={changeProfileFormik.handleChange}
+                                                                value={changeProfileFormik.values.city}
+                                                                >
                                                                <option selected disabled>Choose your city</option>
                                                                {
                                                                    cities.map(data=> (
@@ -198,10 +221,10 @@ function Profile()
                                                            <label htmlFor="name">Zipcode</label>
                                                            <input
                                                                type="text"
-                                                               disabled={true}
                                                                name="zipcode"
                                                                className="form-control"
-                                                               value={customerInfo.zipcode}
+                                                               onChange={changeProfileFormik.handleChange}
+                                                               value={changeProfileFormik.values.zipcode}
                                                                required={true}
                                                            />
                                                        </div>
@@ -213,10 +236,9 @@ function Profile()
                                                            <label htmlFor="name">Telephone no</label>
                                                            <input
                                                                type="text"
-                                                               disabled={true}
                                                                name="telephone_no"
                                                                className="form-control"
-                                                               value={customerInfo.telephone_no}
+                                                               value={changeProfileFormik.values.telephone_no}
                                                                required={true}
                                                            />
                                                        </div>
@@ -225,11 +247,11 @@ function Profile()
                                                        <div className="form-group">
                                                            <label htmlFor="name">Telephone land</label>
                                                            <input
-                                                               disabled={true}
                                                                type="text"
                                                                name="telephone_land"
                                                                className="form-control"
-                                                               value={customerInfo.telephone_land}
+                                                               onChange={changeProfileFormik.handleChange}
+                                                               value={changeProfileFormik.values.telephone_land}
                                                                required={true}
                                                            />
                                                        </div>
@@ -239,28 +261,49 @@ function Profile()
                                                            <label htmlFor="name">Telephone fax</label>
                                                            <input
                                                                type="text"
-                                                               disabled={true}
                                                                name="telephone_fax"
                                                                className="form-control"
-                                                               value={customerInfo.telephone_fax}
+                                                               onChange={changeProfileFormik.handleChange}
+                                                               value={changeProfileFormik.values.telephone_fax}
                                                                required={true}
                                                            />
                                                        </div>
                                                    </div>
+                                                   <div className={'col-12 text-left'}>
+                                                        <Button 
+                                                            type={'submit'} 
+                                                            className={'bg-darkblue text-white'}
+                                                        >Request To Change</Button>
+                                                   </div>
                                                </div>
+                                               </form>
                                            </Tab.Pane>
                                            <Tab.Pane eventKey="second">
-                                               <Form >
+                                               <form onSubmit={changePasswordFormik.handleSubmit}>
                                                    <div className="row">
+                                                   <div className="col-12 text-left">
+                                                           <div className="form-group">
+                                                               <label htmlFor="name">Current password</label>
+                                                               <input
+                                                                    type="password"
+                                                                    name="current_password"
+                                                                    className="form-control"
+                                                                    required={true}
+                                                                    value={changePasswordFormik.values.current_password}
+                                                                    onChange={changePasswordFormik.handleChange}
+                                                               />
+                                                           </div>
+                                                       </div>
                                                        <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12 text-left">
                                                            <div className="form-group">
                                                                <label htmlFor="name">New password</label>
                                                                <input
-                                                                   type="password"
-                                                                   name="password"
-                                                                   className="form-control"
-                                                                   required={true}
-                                                                   ref={register}
+                                                                    type="password"
+                                                                    name="password"
+                                                                    className="form-control"
+                                                                    required={true}
+                                                                    value={changePasswordFormik.values.password}
+                                                                    onChange={changePasswordFormik.handleChange}
                                                                />
                                                            </div>
                                                        </div>
@@ -269,20 +312,23 @@ function Profile()
                                                                <label htmlFor="email">Confirm password</label>
                                                                <input
                                                                    type="password"
-                                                                   name="confirmPassword"
+                                                                   name="confirm_password"
                                                                    className="form-control"
                                                                    required={true}
-                                                                   ref={register}
-                                                               />
+                                                                   value={changePasswordFormik.values.confirm_password}
+                                                                   onChange={changePasswordFormik.handleChange}
+                                                                   />
                                                            </div>
                                                        </div>
                                                    </div>
                                                    <div className="row">
                                                        <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12" align="left">
-                                                           <Button size="sm" className={'bg-darkblue text-white font-weight-bold'}>Change password</Button>
+                                                           <Button
+                                                                type={'submit'}
+                                                                className={'bg-darkblue text-white font-weight-bold'}>Change password</Button>
                                                        </div>
                                                    </div>
-                                               </Form>
+                                               </form>
                                            </Tab.Pane>
                                        </Tab.Content>
                                    </Col>

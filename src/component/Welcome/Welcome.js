@@ -42,7 +42,6 @@ function Welcome(){
                                 src={thirdImage}
                                 alt="Third slide"
                             />
-
                             <Carousel.Caption>
                             <h3 className="h3 h3-responsive text-white"><FontAwesomeIcon icon={faPaintBrush}/> Modern designs</h3>
                                 <p className="text-white">Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
@@ -52,7 +51,7 @@ function Welcome(){
                 </div>
             </Row>
             <Row>
-                <div className="col-lg-6 col-md-6 col-sm-12 bg-new-light text-center p-5">
+                <div className="col-lg-6 col-md-6 col-sm-12 bg-new-light text-center p-lg-5">
                     <img
                         alt={''}
                         className="d-block w-100"
@@ -107,7 +106,7 @@ function Welcome(){
                         </p>
                     </Jumbotron>
                 </div>
-                <div className="col-lg-6 col-md-6 col-sm-6 text-center p-5 bg-new-light">
+                <div className="col-lg-6 col-md-6 col-sm-12 bg-new-light text-center p-lg-5">
                     <img
                         alt={''}
                         className="d-block w-100"
@@ -130,7 +129,7 @@ function Welcome(){
                         </p>
                     </Jumbotron>
                 </div>
-                <div className="col-lg-6 col-md-6 col-sm-12 bg-new-light text-center p-5">
+                <div className="col-lg-6 col-md-6 col-sm-12 bg-new-light text-center p-lg-5">
                     <img
                         alt={''}
                         className="d-block w-100"

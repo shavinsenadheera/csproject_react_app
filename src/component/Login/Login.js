@@ -90,7 +90,6 @@ function Login(props){
                                     <FormControl type="email" name="email" ref={register} />
                                 </InputGroup>
                                 <p className="text-danger">{ errors.email && <FontAwesomeIcon icon={faExclamationCircle} /> } {errors.email?.message}</p>
-    
                                 <InputGroup className="mb-3">
                                     <InputGroup.Prepend>
                                         <InputGroup.Text><FontAwesomeIcon icon={faKey} /></InputGroup.Text>

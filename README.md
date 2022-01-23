@@ -1,2 +1,2 @@
-#Rabbitdevs Devloping Project
-All right reserved for rabbitdevs
+#RuhunaCS@group06 Devloping Project
+All right reserved for RuhunaCS@group06

@@ -36,9 +36,12 @@ function Header(props){
                             <Nav.Link>
                                 <Link to="/about-us" tag={Nav.Link} className="text-white">About Us</Link>
                             </Nav.Link>
-                            <Nav.Link>
-                                <Link to="/new-customer" tag={Nav.Link} className="text-warning">New Customer</Link>
-                            </Nav.Link>
+                            {
+                                !localStorage.getItem('isLogged') &&
+                                <Nav.Link>
+                                    <Link to="/new-customer" tag={Nav.Link} className="text-warning">New Customer</Link>
+                                </Nav.Link>
+                            }
                         </Nav>
                         <Nav>
                             <Nav.Link>

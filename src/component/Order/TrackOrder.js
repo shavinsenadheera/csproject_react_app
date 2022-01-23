@@ -17,7 +17,8 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { VerticalTimeline, VerticalTimelineElement }  from 'react-vertical-timeline-component';
 import 'react-vertical-timeline-component/style.min.css';
-import Select from 'react-select'
+import Select from 'react-select';
+import instance from '../../service/api/instance';
 
 function TrackOrder(){
     
@@ -42,8 +43,8 @@ function TrackOrder(){
     },[])
     
     const getOrderData=async ()=>{
-        await axios
-        .get(`http://csprojecttemp.rabbitdevs.com/api/get-all-orders/${localStorage.getItem('user_id')}`)
+        await instance
+        .get(`get-all-orders/${localStorage.getItem('user_id')}`)
         .then((response)=>{
             setOrders(response.data.orders)
             setStatuses(response.data.statuses)
